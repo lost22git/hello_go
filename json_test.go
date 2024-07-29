@@ -1,0 +1,57 @@
+package hello
+
+import (
+	"encoding/json"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+type Book struct {
+	Id         uint     `json:"id"`
+	Name       string   `json:"name"`
+	Categories []string `json:"categories"`
+	Price      float64  `json:"price"`
+}
+
+func TestJsonEncode(t *testing.T) {
+	var book = Book{
+		Id:         11,
+		Name:       "《史记》",
+		Categories: []string{"历史", "中国"},
+		Price:      66.99,
+	}
+	if jsonBytes, err := json.MarshalIndent(book, "", "    "); err != nil {
+		assert.Failf(t, "Failed to json encode", "book=%+v err=%v", book, err)
+	} else {
+		var want = `{
+    "id": 11,
+    "name": "《史记》",
+    "categories": [
+        "历史",
+        "中国"
+    ],
+    "price": 66.99
+}`
+		assert.Equal(t, want, string(jsonBytes))
+	}
+}
+
+func TestJsonDecode(t *testing.T) {
+	var jsonBytes = []byte(`
+{
+    "id": 11,
+    "name": "《史记》",
+    "categories": [
+      "历史", 
+      "中国"
+    ]
+}
+`)
+	var book Book
+	if err := json.Unmarshal(jsonBytes, &book); err != nil {
+		assert.Failf(t, "Failed to json decode", "json=%q err=%v", string(jsonBytes), err)
+	}
+	var want = Book{Id: 11, Name: "《史记》", Categories: []string{"历史", "中国"}}
+	assert.Equal(t, want, book)
+}
