@@ -11,7 +11,7 @@ type Book struct {
 	Id         uint     `json:"id"`
 	Name       string   `json:"name"`
 	Categories []string `json:"categories"`
-	Price      float64  `json:"price"`
+	Price      float64  `json:"price,omitempty"`
 }
 
 func TestJsonEncode(t *testing.T) {
@@ -19,7 +19,7 @@ func TestJsonEncode(t *testing.T) {
 		Id:         11,
 		Name:       "《史记》",
 		Categories: []string{"历史", "中国"},
-		Price:      66.99,
+    Price: 0.0,
 	}
 	if jsonBytes, err := json.MarshalIndent(book, "", "    "); err != nil {
 		assert.Failf(t, "Failed to json encode", "book=%+v err=%v", book, err)
@@ -30,8 +30,7 @@ func TestJsonEncode(t *testing.T) {
     "categories": [
         "历史",
         "中国"
-    ],
-    "price": 66.99
+    ]
 }`
 		assert.Equal(t, want, string(jsonBytes))
 	}
